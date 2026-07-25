@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Church Announcements — Control Panel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Lato:wght@300;400;700;900&family=Manrope:wght@300;400;500;600;700;800&family=Montserrat:wght@300;400;500;600;700;800&family=Open+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Poppins:wght@300;400;500;600;700;800&family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=controller-ui-2">
+</head>
+<body>
+
+<header class="toolbar">
+  <div class="brand"><span class="tally" id="tally"></span> Church Announcements</div>
+  <div class="toolbar-actions">
+    <button class="btn" id="btn-hide">Hide / Clear Screen</button>
+    <button class="btn" id="btn-open-display">Open Display Window</button>
+    <button class="btn" id="btn-export">Export</button>
+    <button class="btn" id="btn-import">Import</button>
+  </div>
+</header>
+
+<main class="layout">
+
+  <!-- Left panel (Tabs) -->
+  <section class="panel control-panel">
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="tab-announcements">Announcements</button>
+      <button class="tab-btn" data-tab="tab-style">Style</button>
+      <button class="tab-btn" data-tab="tab-position">Position</button>
+      <button class="tab-btn" data-tab="tab-presets">Presets</button>
+    </div>
+
+    <div class="tab-content active" id="tab-announcements">
+      <h2 id="form-title">Add Announcement</h2>
+      <form id="ann-form">
+        <label>Title
+          <input type="text" id="f-title" placeholder="Sunday Potluck" required>
+        </label>
+        <label>Subtitle <span class="opt">(optional)</span>
+          <input type="text" id="f-subtitle" placeholder="This Sunday after service">
+        </label>
+        <label>Description <span class="opt">(optional)</span></label>
+        <div class="richtext-wrapper">
+          <div class="richtext-toolbar">
+            <button type="button" class="rt-btn" data-cmd="bold" title="Bold"><b>B</b></button>
+            <button type="button" class="rt-btn" data-cmd="italic" title="Italic"><i>I</i></button>
+            <button type="button" class="rt-btn" data-cmd="insertUnorderedList" title="Bullet List">• List</button>
+          </div>
+          <div id="f-description" class="richtext-editor" contenteditable="true" data-placeholder="Bring a dish to share…"></div>
+        </div>
+        <label>Image 1 (Main) <span class="opt">(optional)</span>
+          <input type="file" id="f-image" accept="image/png,image/jpeg,image/webp,image/svg+xml">
+        </label>
+        <img id="f-image-preview" class="image-preview" hidden alt="">
+        <button type="button" class="btn" id="btn-clear-image" hidden>Clear Image 1</button>
+
+        <label>Image 2 <span class="opt">(optional)</span>
+          <input type="file" id="f-image2" accept="image/png,image/jpeg,image/webp,image/svg+xml">
+        </label>
+        <img id="f-image2-preview" class="image-preview" hidden alt="">
+        <button type="button" class="btn" id="btn-clear-image2" hidden>Clear Image 2</button>
+
+        <label>Image 3 <span class="opt">(optional)</span>
+          <input type="file" id="f-image3" accept="image/png,image/jpeg,image/webp,image/svg+xml">
+        </label>
+        <img id="f-image3-preview" class="image-preview" hidden alt="">
+        <button type="button" class="btn" id="btn-clear-image3" hidden>Clear Image 3</button>
+
+        <div class="form-actions">
+          <button type="submit" class="btn primary" id="btn-save">+ Add Announcement</button>
+          <button type="button" class="btn" id="btn-cancel-edit" hidden>Cancel</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="tab-content style-panel" id="tab-style">
+      <h2>General Style <span id="style-context-badge" class="muted" style="font-weight:normal; font-size:12px; margin-left:8px;">(Global Default)</span></h2>
+      <!-- Quick preset apply -->
+      <div class="preset-quick-bar">
+        <select id="s-quick-preset">
+          <option value="">— Apply a saved preset —</option>
+        </select>
+        <button class="btn" id="btn-quick-apply-preset" title="Apply selected preset">Apply</button>
+      </div>
+      <div class="style-group">
+        <label>Display Layout
+          <select id="s-layout">
+            <option value="lower-third">Lower Third (Default)</option>
+            <option value="fullscreen">Full Screen</option>
+            <option value="side-panel">Side Panel</option>
+            <option value="ticker">Ticker / Crawl</option>
+          </select>
+        </label>
+        <label>Transition
+          <select id="s-transition">
+            <option value="fade">Fade</option>
+            <option value="slide-left">Slide Left</option>
+            <option value="slide-right">Slide Right</option>
+            <option value="slide-up">Slide Up</option>
+            <option value="slide-down">Slide Down</option>
+            <option value="zoom">Zoom</option>
+            <option value="scale">Scale</option>
+          </select>
+        </label>
+      </div>
+
+      <h2>Typography</h2>
+      <div class="style-group">
+        <h3>Title</h3>
+        <div class="row">
+          <label>Font Family
+            <select id="s-title-font">
+              <optgroup label="Google Fonts">
+                <option value="'Inter', sans-serif">Inter</option>
+                <option value="'Roboto', sans-serif">Roboto</option>
+                <option value="'Manrope', sans-serif">Manrope</option>
+                <option value="'Poppins', sans-serif">Poppins</option>
+                <option value="'Montserrat', sans-serif">Montserrat</option>
+                <option value="'Open Sans', sans-serif">Open Sans</option>
+                <option value="'Lato', sans-serif">Lato</option>
+                <option value="'Playfair Display', serif">Playfair Display</option>
+              </optgroup>
+              <optgroup label="System Fonts">
+                <option value="'Arial', sans-serif">Arial</option>
+                <option value="'Arial Black', sans-serif">Arial Black</option>
+                <option value="'Verdana', sans-serif">Verdana</option>
+                <option value="'Tahoma', sans-serif">Tahoma</option>
+                <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
+                <option value="'Segoe UI', sans-serif">Segoe UI</option>
+                <option value="'Calibri', sans-serif">Calibri</option>
+                <option value="'Helvetica', sans-serif">Helvetica</option>
+                <option value="'Georgia', serif">Georgia</option>
+                <option value="'Times New Roman', serif">Times New Roman</option>
+                <option value="'Palatino Linotype', serif">Palatino Linotype</option>
+                <option value="'Book Antiqua', serif">Book Antiqua</option>
+                <option value="'Garamond', serif">Garamond</option>
+                <option value="'Cambria', serif">Cambria</option>
+                <option value="'Century Gothic', sans-serif">Century Gothic</option>
+                <option value="'Franklin Gothic Medium', sans-serif">Franklin Gothic Medium</option>
+                <option value="'Lucida Sans', sans-serif">Lucida Sans</option>
+                <option value="'Impact', sans-serif">Impact</option>
+                <option value="'Comic Sans MS', cursive">Comic Sans MS</option>
+                <option value="'Courier New', monospace">Courier New</option>
+                <option value="'Consolas', monospace">Consolas</option>
+              </optgroup>
+              <optgroup label="Other">
+                <option value="__custom__">Type a font name…</option>
+              </optgroup>
+            </select>
+          </label>
+          <label class="custom-font-label" id="s-title-font-custom-label" hidden>Custom Font Name
+            <input type="text" id="s-title-font-custom" placeholder="e.g. Bahnschrift, Candara">
+          </label>
+          <label>Weight
+            <select id="s-title-weight">
+              <option value="300">Light</option>
+              <option value="400">Regular</option>
+              <option value="500">Medium</option>
+              <option value="600">Semi-Bold</option>
+              <option value="700">Bold</option>
+              <option value="800">Extra-Bold</option>
+              <option value="900">Black</option>
+            </select>
+          </label>
+        </div>
+        <div class="row">
+          <label>Size (px) <input type="number" id="s-title-size"></label>
+          <label>Color <input type="color" id="s-title-color"></label>
+        </div>
+        <div class="row">
+          <label>X Offset (px) <input type="number" id="s-title-offset-x"></label>
+          <label>Y Offset (px) <input type="number" id="s-title-offset-y"></label>
+        </div>
+        <div class="row">
+          <label>Shadow X <input type="number" id="s-title-shadow-x" value="0"></label>
+          <label>Shadow Y <input type="number" id="s-title-shadow-y" value="2"></label>
+        </div>
+        <div class="row">
+          <label>Shadow Blur <input type="number" id="s-title-shadow-blur" value="4" min="0"></label>
+          <label>Shadow Color <input type="color" id="s-title-shadow-color" value="#000000"></label>
+        </div>
+        
+        <h3>Subtitle</h3>
+        <div class="row">
+          <label>Font Family
+            <select id="s-subtitle-font">
+              <optgroup label="Google Fonts">
+                <option value="'Inter', sans-serif">Inter</option>
+                <option value="'Roboto', sans-serif">Roboto</option>
+                <option value="'Manrope', sans-serif">Manrope</option>
+                <option value="'Poppins', sans-serif">Poppins</option>
+                <option value="'Montserrat', sans-serif">Montserrat</option>
+                <option value="'Open Sans', sans-serif">Open Sans</option>
+                <option value="'Lato', sans-serif">Lato</option>
+                <option value="'Playfair Display', serif">Playfair Display</option>
+              </optgroup>
+              <optgroup label="System Fonts">
+                <option value="'Arial', sans-serif">Arial</option>
+                <option value="'Arial Black', sans-serif">Arial Black</option>
+                <option value="'Verdana', sans-serif">Verdana</option>
+                <option value="'Tahoma', sans-serif">Tahoma</option>
+                <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
+                <option value="'Segoe UI', sans-serif">Segoe UI</option>
+                <option value="'Calibri', sans-serif">Calibri</option>
+                <option value="'Helvetica', sans-serif">Helvetica</option>
+                <option value="'Georgia', serif">Georgia</option>
+                <option value="'Times New Roman', serif">Times New Roman</option>
+                <option value="'Palatino Linotype', serif">Palatino Linotype</option>
+                <option value="'Book Antiqua', serif">Book Antiqua</option>
+                <option value="'Garamond', serif">Garamond</option>
+                <option value="'Cambria', serif">Cambria</option>
+                <option value="'Century Gothic', sans-serif">Century Gothic</option>
+                <option value="'Franklin Gothic Medium', sans-serif">Franklin Gothic Medium</option>
+                <option value="'Lucida Sans', sans-serif">Lucida Sans</option>
+                <option value="'Impact', sans-serif">Impact</option>
+                <option value="'Comic Sans MS', cursive">Comic Sans MS</option>
+                <option value="'Courier New', monospace">Courier New</option>
+                <option value="'Consolas', monospace">Consolas</option>
+              </optgroup>
+              <optgroup label="Other">
+                <option value="__custom__">Type a font name…</option>
+              </optgroup>
+            </select>
+          </label>
+          <label class="custom-font-label" id="s-subtitle-font-custom-label" hidden>Custom Font Name
+            <input type="text" id="s-subtitle-font-custom" placeholder="e.g. Bahnschrift, Candara">
+          </label>
+          <label>Weight
+            <select id="s-subtitle-weight">
+              <option value="300">Light</option>
+              <option value="400">Regular</option>
+              <option value="500">Medium</option>
+              <option value="600">Semi-Bold</option>
+              <option value="700">Bold</option>
+              <option value="800">Extra-Bold</option>
+              <option value="900">Black</option>
+            </select>
+          </label>
+        </div>
+        <div class="row">
+          <label>Size (px) <input type="number" id="s-subtitle-size"></label>
+          <label>Color <input type="color" id="s-subtitle-color"></label>
+        </div>
+        <div class="row">
+          <label>X Offset (px) <input type="number" id="s-subtitle-offset-x"></label>
+          <label>Y Offset (px) <input type="number" id="s-subtitle-offset-y"></label>
+        </div>
+        <div class="row">
+          <label>Shadow X <input type="number" id="s-subtitle-shadow-x" value="0"></label>
+          <label>Shadow Y <input type="number" id="s-subtitle-shadow-y" value="0"></label>
+        </div>
+        <div class="row">
+          <label>Shadow Blur <input type="number" id="s-subtitle-shadow-blur" value="0" min="0"></label>
+          <label>Shadow Color <input type="color" id="s-subtitle-shadow-color" value="#000000"></label>
+        </div>
+
+        <h3>Description</h3>
+        <div class="row">
+          <label>Font Family
+            <select id="s-desc-font">
+              <optgroup label="Google Fonts">
+                <option value="'Inter', sans-serif">Inter</option>
+                <option value="'Roboto', sans-serif">Roboto</option>
+                <option value="'Manrope', sans-serif">Manrope</option>
+                <option value="'Poppins', sans-serif">Poppins</option>
+                <option value="'Montserrat', sans-serif">Montserrat</option>
+                <option value="'Open Sans', sans-serif">Open Sans</option>
+                <option value="'Lato', sans-serif">Lato</option>
+                <option value="'Playfair Display', serif">Playfair Display</option>
+              </optgroup>
+              <optgroup label="System Fonts">
+                <option value="'Arial', sans-serif">Arial</option>
+                <option value="'Arial Black', sans-serif">Arial Black</option>
+                <option value="'Verdana', sans-serif">Verdana</option>
+                <option value="'Tahoma', sans-serif">Tahoma</option>
+                <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
+                <option value="'Segoe UI', sans-serif">Segoe UI</option>
+                <option value="'Calibri', sans-serif">Calibri</option>
+                <option value="'Helvetica', sans-serif">Helvetica</option>
+                <option value="'Georgia', serif">Georgia</option>
+                <option value="'Times New Roman', serif">Times New Roman</option>
+                <option value="'Palatino Linotype', serif">Palatino Linotype</option>
+                <option value="'Book Antiqua', serif">Book Antiqua</option>
+                <option value="'Garamond', serif">Garamond</option>
+                <option value="'Cambria', serif">Cambria</option>
+                <option value="'Century Gothic', sans-serif">Century Gothic</option>
+                <option value="'Franklin Gothic Medium', sans-serif">Franklin Gothic Medium</option>
+                <option value="'Lucida Sans', sans-serif">Lucida Sans</option>
+                <option value="'Impact', sans-serif">Impact</option>
+                <option value="'Comic Sans MS', cursive">Comic Sans MS</option>
+                <option value="'Courier New', monospace">Courier New</option>
+                <option value="'Consolas', monospace">Consolas</option>
+              </optgroup>
+              <optgroup label="Other">
+                <option value="__custom__">Type a font name…</option>
+              </optgroup>
+            </select>
+          </label>
+          <label class="custom-font-label" id="s-desc-font-custom-label" hidden>Custom Font Name
+            <input type="text" id="s-desc-font-custom" placeholder="e.g. Bahnschrift, Candara">
+          </label>
+          <label>Weight
+            <select id="s-desc-weight">
+              <option value="300">Light</option>
+              <option value="400">Regular</option>
+              <option value="500">Medium</option>
+              <option value="600">Semi-Bold</option>
+              <option value="700">Bold</option>
+              <option value="800">Extra-Bold</option>
+              <option value="900">Black</option>
+            </select>
+          </label>
+        </div>
+        <div class="row">
+          <label>Size (px) <input type="number" id="s-desc-size"></label>
+          <label>Color <input type="color" id="s-desc-color"></label>
+        </div>
+        <div class="row">
+          <label>X Offset (px) <input type="number" id="s-desc-offset-x"></label>
+          <label>Y Offset (px) <input type="number" id="s-desc-offset-y"></label>
+        </div>
+        <div class="row">
+          <label>Shadow X <input type="number" id="s-desc-shadow-x" value="0"></label>
+          <label>Shadow Y <input type="number" id="s-desc-shadow-y" value="0"></label>
+        </div>
+        <div class="row">
+          <label>Shadow Blur <input type="number" id="s-desc-shadow-blur" value="0" min="0"></label>
+          <label>Shadow Color <input type="color" id="s-desc-shadow-color" value="#000000"></label>
+        </div>
+      </div>
+
+      <h2>Image 1 (Main)</h2>
+      <div class="style-group">
+        <div class="row">
+          <label>Size (px) <input type="number" id="s-image-size"></label>
+          <label>Border Radius (px) <input type="number" id="s-image-radius"></label>
+        </div>
+        <div class="row">
+          <label>Image Fit
+            <select id="s-image-fit">
+              <option value="cover">Cover (Crop to fill)</option>
+              <option value="contain">Contain (Show whole image)</option>
+              <option value="fill">Stretch</option>
+            </select>
+          </label>
+        </div>
+        <div class="row">
+          <label>X Offset (px) <input type="number" id="s-image-offset-x"></label>
+          <label>Y Offset (px) <input type="number" id="s-image-offset-y"></label>
+        </div>
+      </div>
+
+      <h2>Image 2</h2>
+      <div class="style-group">
+        <div class="row">
+          <label>Size (px) <input type="number" id="s-image2-size"></label>
+          <label>Border Radius (px) <input type="number" id="s-image2-radius"></label>
+        </div>
+        <div class="row">
+          <label>Image Fit
+            <select id="s-image2-fit">
+              <option value="cover">Cover (Crop to fill)</option>
+              <option value="contain">Contain (Show whole image)</option>
+              <option value="fill">Stretch</option>
+            </select>
+          </label>
+        </div>
+        <div class="row">
+          <label>X Offset (px) <input type="number" id="s-image2-offset-x"></label>
+          <label>Y Offset (px) <input type="number" id="s-image2-offset-y"></label>
+        </div>
+        <label>Position Absolute? <input type="checkbox" id="s-image2-absolute" style="width: auto;"></label>
+      </div>
+
+      <h2>Image 3</h2>
+      <div class="style-group">
+        <div class="row">
+          <label>Size (px) <input type="number" id="s-image3-size"></label>
+          <label>Border Radius (px) <input type="number" id="s-image3-radius"></label>
+        </div>
+        <div class="row">
+          <label>Image Fit
+            <select id="s-image3-fit">
+              <option value="cover">Cover (Crop to fill)</option>
+              <option value="contain">Contain (Show whole image)</option>
+              <option value="fill">Stretch</option>
+            </select>
+          </label>
+        </div>
+        <div class="row">
+          <label>X Offset (px) <input type="number" id="s-image3-offset-x"></label>
+          <label>Y Offset (px) <input type="number" id="s-image3-offset-y"></label>
+        </div>
+        <label>Position Absolute? <input type="checkbox" id="s-image3-absolute" style="width: auto;"></label>
+      </div>
+
+      <h2>Box Background</h2>
+      <div class="style-group">
+        <label>Background Type
+          <select id="s-bg-type">
+            <option value="transparent">Transparent (None)</option>
+            <option value="solid">Solid Color</option>
+            <option value="gradient">Gradient</option>
+            <option value="image">Image</option>
+          </select>
+        </label>
+        <div class="row" id="s-bg-solid-group" hidden>
+          <label>Color <input type="color" id="s-bg-color"></label>
+          <label>Opacity <input type="range" id="s-bg-opacity" min="0" max="1" step="0.05" value="1"></label>
+        </div>
+        <div class="row" id="s-bg-gradient-group" hidden>
+          <label>Color 1 <input type="color" id="s-bg-gradient1"></label>
+          <label>Color 2 <input type="color" id="s-bg-gradient2"></label>
+          <label>Angle <input type="number" id="s-bg-angle" value="90"> deg</label>
+        </div>
+        <div class="row" id="s-bg-image-group" hidden>
+          <label style="flex:2">Image Upload <input type="file" id="s-bg-image-file" accept="image/*"></label>
+          <button class="btn" id="s-bg-image-clear">Clear</button>
+        </div>
+        <div class="row" id="s-bg-image-options" hidden>
+          <label>Size
+            <select id="s-bg-image-size">
+              <option value="cover">Cover</option>
+              <option value="contain">Contain</option>
+              <option value="auto">Original</option>
+              <option value="100% 100%">Stretch</option>
+              <option value="__manual__">Manual Scale…</option>
+            </select>
+          </label>
+          <label>X Pos % <input type="number" id="s-bg-image-x" value="50"></label>
+          <label>Y Pos % <input type="number" id="s-bg-image-y" value="50"></label>
+          <label style="flex:0.5">Repeat <input type="checkbox" id="s-bg-image-repeat" style="width:auto"></label>
+        </div>
+        <div class="row" id="s-bg-image-manual-group" hidden>
+          <label>Width (%) <input type="range" id="s-bg-image-scale-w" min="10" max="500" value="100"><span id="s-bg-image-scale-w-val">100%</span></label>
+          <label>Height (%) <input type="range" id="s-bg-image-scale-h" min="10" max="500" value="100"><span id="s-bg-image-scale-h-val">100%</span></label>
+        </div>
+        <label>Backdrop Blur (px)
+          <input type="range" id="s-backdrop-blur" min="0" max="40" value="0">
+        </label>
+      </div>
+      
+      <h2>Box Border & Shadow</h2>
+      <div class="style-group">
+        <div class="row">
+          <label>Border Width (px) <input type="number" id="s-border-width"></label>
+          <label>Border Color <input type="color" id="s-border-color"></label>
+        </div>
+        <label>Border Radius (px) <input type="range" id="s-border-radius" min="0" max="100"></label>
+        <label>Padding (px) <input type="range" id="s-padding" min="0" max="100"></label>
+        <label>Drop Shadow Opacity <input type="range" id="s-shadow-opacity" min="0" max="1" step="0.05"></label>
+      </div>
+      <button class="btn" id="btn-reset-style">Reset Style to Default</button>
+    </div>
+
+    <!-- Presets Tab -->
+    <div class="tab-content" id="tab-presets">
+      <h2>Style Presets</h2>
+      <p class="hint">Save the current style settings as a reusable preset. Apply presets to quickly style any announcement.</p>
+
+      <div class="preset-save-group">
+        <label>Preset Name
+          <input type="text" id="preset-name" placeholder="e.g. Sunday Theme, Youth Night">
+        </label>
+        <button class="btn primary" id="btn-save-preset">Save Current Style as Preset</button>
+      </div>
+
+      <h3 style="margin-top: 24px;">Saved Presets</h3>
+      <div id="preset-list" class="preset-list"></div>
+      <p class="empty-hint" id="preset-empty-hint">No presets saved yet — style an announcement and save it above.</p>
+    </div>
+
+    <div class="tab-content" id="tab-position">
+      <h2>Lower Third Position</h2>
+      
+      <div class="position-grid">
+        <button class="pos-preset" data-pos="top-left"></button>
+        <button class="pos-preset" data-pos="top-center"></button>
+        <button class="pos-preset" data-pos="top-right"></button>
+        <button class="pos-preset" data-pos="middle-left"></button>
+        <button class="pos-preset" data-pos="center"></button>
+        <button class="pos-preset" data-pos="middle-right"></button>
+        <button class="pos-preset" data-pos="bottom-left"></button>
+        <button class="pos-preset active" data-pos="bottom-center"></button>
+        <button class="pos-preset" data-pos="bottom-right"></button>
+      </div>
+
+      <div class="style-group">
+        <label>Fine-tune X Offset (px)
+          <input type="range" id="p-offset-x" min="-500" max="500" value="0">
+        </label>
+        <label>Fine-tune Y Offset (px)
+          <input type="range" id="p-offset-y" min="-500" max="500" value="0">
+        </label>
+        <label>Max Width (px, 0 = auto)
+          <input type="number" id="p-max-width" value="1300">
+        </label>
+        <label>Max Height (px, 0 = auto)
+          <input type="number" id="p-max-height" value="0">
+        </label>
+      </div>
+    </div>
+
+    <div class="floating-save" id="floating-save" hidden>
+      <span class="floating-save-label" id="floating-save-label">Editing</span>
+      <button class="btn primary" id="btn-floating-save">Save Changes</button>
+      <button class="btn" id="btn-floating-cancel">Cancel</button>
+    </div>
+
+  </section>
+
+  <!-- List, stacked one below another -->
+  <section class="panel list-panel">
+    <h2>Announcements <span class="muted" id="list-count">(0)</span> <button class="btn danger" id="btn-out" title="Animate the current slide out" style="margin-left: auto; font-size: 12px; padding: 6px 14px;">⏏ Out</button></h2>
+    <p class="hint">Click an announcement to show it on screen immediately.</p>
+    <div id="ann-list" class="ann-list"></div>
+    <p class="empty-hint" id="empty-hint">No announcements yet — add one on the left.</p>
+
+    <!-- Live Preview -->
+    <div class="live-preview-section">
+      <h2>Live Preview</h2>
+      <div class="live-preview-container" id="live-preview-container">
+        <div class="live-preview-stage" id="live-preview-stage">
+          <p class="preview-placeholder" id="preview-placeholder">Click an announcement above or add a new one to preview it here.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Undo Delete Toast -->
+<div class="undo-toast" id="undo-toast">
+  <span id="undo-toast-msg">Announcement deleted.</span>
+  <button class="btn" id="btn-undo">Undo</button>
+  <button class="undo-dismiss" id="btn-undo-dismiss">&times;</button>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
