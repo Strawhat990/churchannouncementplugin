@@ -1602,6 +1602,28 @@
     initStyleForm();
     saveStyle();
 
+    // Also apply to the live announcement if not currently editing,
+    // so the preview and OBS display output reflect the preset
+    if (!editingId && liveId) {
+      var a = announcements.find(function (x) { return x.id === liveId; });
+      if (a) {
+        a.style = JSON.parse(JSON.stringify(styleConfig));
+        saveList();
+        if (channel) {
+          try { channel.postMessage({ type: 'style', config: a.style }); } catch (e) { }
+        }
+        try {
+          var raw = localStorage.getItem(STORAGE_CURRENT);
+          if (raw) {
+            var curr = JSON.parse(raw);
+            curr.announcement = a;
+            localStorage.setItem(STORAGE_CURRENT, JSON.stringify(curr));
+          }
+        } catch (e) { }
+        refreshPreview();
+      }
+    }
+
     document.querySelector('[data-tab="tab-style"]').click();
   }
 
