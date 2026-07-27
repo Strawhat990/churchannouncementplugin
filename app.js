@@ -32,8 +32,9 @@
   var fImagePreview3 = document.getElementById('f-image3-preview');
   var btnClearImage3 = document.getElementById('btn-clear-image3');
 
-  var announcements = loadList();
-  var styleConfig = loadStyle();
+  // These are populated asynchronously in init()
+  var announcements = [];
+  var styleConfig = getDefaultStyle();
   var editingId = null;
   var currentImageData = null;
   var currentImageData2 = null;
@@ -87,8 +88,8 @@
     return fDescription.textContent.trim() ? sanitizeDescriptionHtml(html) : '';
   }
 
-  // Presets
-  var presets = loadPresets();
+  // Presets — populated asynchronously in init()
+  var presets = [];
 
   // ---------- Default Style Configuration ----------
   function getDefaultStyle() {
@@ -188,28 +189,24 @@
   // ---------- Storage helpers ----------
 
   function loadList() {
-    try {
-      var raw = localStorage.getItem(STORAGE_LIST);
-      var parsed = raw ? JSON.parse(raw) : [];
-      if (!Array.isArray(parsed)) return [];
+    return idbStore.get(STORAGE_LIST).then(function (data) {
+      var parsed = Array.isArray(data) ? data : [];
       return parsed.map(function (announcement) {
         if (!announcement || typeof announcement !== 'object') return announcement;
         announcement.description = sanitizeDescriptionHtml(announcement.description);
         if (announcement.style) announcement.style = mergeStyleWithDefaults(announcement.style);
         return announcement;
       });
-    } catch (e) {
+    }).catch(function () {
       return [];
-    }
+    });
   }
 
   function saveList() {
-    try {
-      localStorage.setItem(STORAGE_LIST, JSON.stringify(announcements));
-    } catch (e) {
-      alert("Failed to save. You may have run out of browser storage space. Try deleting some older announcements or clearing large images.");
+    idbStore.set(STORAGE_LIST, announcements).catch(function (e) {
+      alert("Failed to save. Your browser may be low on storage. Try deleting some older announcements or clearing large images.");
       console.error("Storage error:", e);
-    }
+    });
   }
 
   function loadStyle() {
@@ -272,21 +269,18 @@
   // ---------- Presets Storage ----------
 
   function loadPresets() {
-    try {
-      var raw = localStorage.getItem(STORAGE_PRESETS);
-      var parsed = raw ? JSON.parse(raw) : [];
-      return Array.isArray(parsed) ? parsed : [];
-    } catch (e) {
+    return idbStore.get(STORAGE_PRESETS).then(function (data) {
+      return Array.isArray(data) ? data : [];
+    }).catch(function () {
       return [];
-    }
+    });
   }
 
   function savePresets() {
-    try {
-      localStorage.setItem(STORAGE_PRESETS, JSON.stringify(presets));
-    } catch (e) {
-      alert('Failed to save presets. Storage may be full.');
-    }
+    idbStore.set(STORAGE_PRESETS, presets).catch(function (e) {
+      alert('Failed to save presets. Storage may be low.');
+      console.error('Preset storage error:', e);
+    });
   }
 
   // ---------- Tabs ----------
@@ -1497,11 +1491,7 @@
     if (a) updatePreview(a);
   }
 
-  // Show preview of last live item on boot
-  if (liveId) {
-    var liveAnn = announcements.find(function (x) { return x.id === liveId; });
-    if (liveAnn) updatePreview(liveAnn);
-  }
+  // (Preview of last live item is shown at boot inside init())
 
   // ---------- Style Presets ----------
 
@@ -1646,11 +1636,25 @@
 
   // ---------- Boot ----------
 
-  initStyleForm();
-  attachStyleListeners();
-  render();
-  renderPresetList();
-  populatePresetDropdown();
+  async function init() {
+    await idbStore.open();
+    announcements = await loadList();
+    styleConfig = loadStyle();
+    presets = await loadPresets();
+    liveId = getCurrentLiveId();
+
+    initStyleForm();
+    attachStyleListeners();
+    render();
+    renderPresetList();
+    populatePresetDropdown();
+
+    // Show preview of last live item on boot
+    if (liveId) {
+      var liveAnn = announcements.find(function (x) { return x.id === liveId; });
+      if (liveAnn) updatePreview(liveAnn);
+    }
+  }
 
   // Rich text toolbar
   document.querySelectorAll('.rt-btn').forEach(function (btn) {
@@ -1661,6 +1665,11 @@
       document.execCommand(btn.getAttribute('data-cmd'), false, null);
       fDescription.focus();
     });
+  });
+
+  init().catch(function (err) {
+    console.error('Failed to initialize:', err);
+    alert('Failed to load data. Please refresh the page.');
   });
 
 })();

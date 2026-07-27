@@ -8,11 +8,14 @@ var childProcess = require('node:child_process');
 var root = path.resolve(__dirname, '..');
 var appPath = path.join(root, 'app.js');
 var displayPath = path.join(root, 'display.js');
+var idbPath = path.join(root, 'idb-storage.js');
 var app = fs.readFileSync(appPath, 'utf8');
 var display = fs.readFileSync(displayPath, 'utf8');
+var idb = fs.readFileSync(idbPath, 'utf8');
 
 childProcess.execFileSync(process.execPath, ['--check', appPath], { stdio: 'inherit' });
 childProcess.execFileSync(process.execPath, ['--check', displayPath], { stdio: 'inherit' });
+childProcess.execFileSync(process.execPath, ['--check', idbPath], { stdio: 'inherit' });
 
 var checks = [
   ['controller marks the selected announcement live', /function showAnnouncement\(id\)[\s\S]*?tally\.classList\.add\('live'\)/],
@@ -22,11 +25,15 @@ var checks = [
   ['controller limits processed image size', /var maxImageBytes = 1024 \* 1024/],
   ['controller includes description style defaults', /descFont:/],
   ['display includes description style defaults', /descFont:/],
-  ['display reads the OBS hand-off payload', /localStorage\.getItem\(STORAGE_CURRENT\)/]
+  ['display reads the OBS hand-off payload', /localStorage\.getItem\(STORAGE_CURRENT\)/],
+  ['idb-storage exposes open/get/set API', /idbStore/]
 ];
 
 checks.forEach(function (check) {
-  var source = check[0].indexOf('display') === 0 ? display : app;
+  var source;
+  if (check[0].indexOf('display') === 0) source = display;
+  else if (check[0].indexOf('idb-storage') === 0) source = idb;
+  else source = app;
   if (!check[1].test(source)) throw new Error('Preflight check failed: ' + check[0]);
 });
 
